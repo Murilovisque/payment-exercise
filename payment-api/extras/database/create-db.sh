@@ -16,7 +16,7 @@ CREATE_DB_SCHEMA=$(cat <<EOF
     \connect $IDBS;
 
     CREATE TABLE buyer (
-        id_buyer SERIAL PRIMARY KEY,
+        id_buyer UUID PRIMARY KEY,
         name VARCHAR(100) NOT NULL,
         email VARCHAR(64) NOT NULL,
         cpf VARCHAR(11) UNIQUE NOT NULL
@@ -30,7 +30,7 @@ CREATE_DB_SCHEMA=$(cat <<EOF
     CREATE TYPE PAYMENT_TYPE AS ENUM('BOLETO', 'CREDIT_CARD');
 
     CREATE TABLE form_of_payment (
-        id_form_of_payment SERIAL PRIMARY KEY,
+        id_form_of_payment UUID PRIMARY KEY,
         type PAYMENT_TYPE NOT NULL,
         data JSONB NOT NULL
     );
@@ -41,8 +41,8 @@ CREATE_DB_SCHEMA=$(cat <<EOF
         id_payment UUID PRIMARY KEY,
         amount float(2),       
         status PAYMENT_STATUS NOT NULL,
-        id_form_of_payment INTEGER NOT NULL,        
-        id_buyer INTEGER NOT NULL,
+        id_form_of_payment UUID NOT NULL,        
+        id_buyer UUID NOT NULL,
         id_api_client INTEGER NOT NULL,
         FOREIGN KEY (id_form_of_payment) REFERENCES form_of_payment(id_form_of_payment),
         FOREIGN KEY (id_api_client) REFERENCES api_client(id_api_client),

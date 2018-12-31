@@ -30,7 +30,7 @@ public class PaymentRepository extends AbstractRepository {
         super(connectionWrapper);
     }
 
-	public Optional<Payment> getPaymentById(UUID id) throws SQLException {
+	public Optional<Payment> getPaymentWithId(UUID id) throws SQLException {
         try (PreparedStatement stmt = getConnection().prepareStatement(GET_BY_ID)) {
 			stmt.setObject(1, id);
 			try (ResultSet rs = stmt.executeQuery()) {
@@ -42,21 +42,23 @@ public class PaymentRepository extends AbstractRepository {
 		return Optional.empty();
 	}
 
-	public void insert(Long apiClientId, Payment payment, Long formOfPaymentId, Long buyerId) throws SQLException {
+	public UUID insert(Long apiClientId, Payment payment, UUID formOfPaymentId, UUID buyerId) throws SQLException {
+		UUID id = UUID.randomUUID();
 		PreparedStatement stmt = getConnection().prepareStatement(INSERT_PAYMENT);
-		stmt.setObject(1, UUID.randomUUID());
+		stmt.setObject(1, id);
 		stmt.setBigDecimal(2, payment.getAmount());
 		stmt.setString(3, payment.getStatus().name());
-		stmt.setLong(4, formOfPaymentId);
-		stmt.setLong(5, buyerId);
+		stmt.setObject(4, formOfPaymentId);
+		stmt.setObject(5, buyerId);
 		stmt.setLong(6, apiClientId);		
 		stmt.addBatch();
 		addBatchStatement(stmt);
+		return id;
 	}
 
-	public List<Payment> getPaymentByBuyerId(Long buyerId) throws SQLException {
+	public List<Payment> getPaymentWithBuyerId(UUID buyerId) throws SQLException {
 		try (PreparedStatement stmt = getConnection().prepareStatement(GET_BY_BUYER_ID)) {
-			stmt.setLong(1, buyerId);
+			stmt.setObject(1, buyerId);
 			try (ResultSet rs = stmt.executeQuery()) {
 				List<Payment> pays = new ArrayList<>();
 				while(rs.next())

@@ -2,21 +2,34 @@ package com.payment.api;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.temporal.TemporalAdjusters;
 import java.util.Optional;
+import java.util.Random;
+import java.util.UUID;
 import java.util.regex.Pattern;
 
 import com.payment.api.exceptions.PaymentException;
 import com.payment.api.models.Boleto;
 import com.payment.api.models.Card;
 import com.payment.api.repositories.FormOfPaymentRepository;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.payment.api.repositories.ConnectionProvider;
 import com.payment.api.repositories.ConnectionWrapper;
 
 class FormOfPaymentAPI extends AbstractAPI {
 
+    private static final Logger logger = LoggerFactory.getLogger(FormOfPaymentAPI.class);
     private static final Pattern CARD_NUMBER_REGEX = Pattern.compile("\\d{13,16}");
 
-    FormOfPaymentAPI(APIClientProvider apiClientProvider, ConnectionWrapper connectionWrapper) {
+    public FormOfPaymentAPI(APIClientProvider apiClientProvider, ConnectionWrapper connectionWrapper) {
         super(apiClientProvider, connectionWrapper);
+    }
+
+    public FormOfPaymentAPI(APIClientProvider apiClientProvider, ConnectionProvider connectionProvider) {
+        super(apiClientProvider, connectionProvider);
     }
 
     public boolean isValidCard(Card card) {
@@ -28,8 +41,8 @@ class FormOfPaymentAPI extends AbstractAPI {
         String number = card.getNumber();
         if (!CARD_NUMBER_REGEX.matcher(number).matches())
             return false;
-        if (validSequence(number))//TODO: Validar bandeiras
-            return false;
+        // if (validSequence(number))//TODO: Validar bandeiras
+        //     return false;
         return true;
     }
 
@@ -37,7 +50,7 @@ class FormOfPaymentAPI extends AbstractAPI {
         ConnectionWrapper connectionWrapper = null;
         try {
             connectionWrapper = getConnectionWrapper();
-            return new FormOfPaymentRepository(connectionWrapper).getCardByNumber(number);
+            return new FormOfPaymentRepository(connectionWrapper).getCardWithNumber(number);
         } catch (SQLException e) {
             throw new PaymentException(e);
         } finally {
@@ -45,12 +58,14 @@ class FormOfPaymentAPI extends AbstractAPI {
         }
     }
 
-    public void save(Card card) throws PaymentException {
+    public UUID save(Card card) throws PaymentException {
         ConnectionWrapper connectionWrapper = null;
         try {
             connectionWrapper = getTransactionalConnectionWrapper();
-            new FormOfPaymentRepository(connectionWrapper).insert(card);
+            UUID id = new FormOfPaymentRepository(connectionWrapper).insert(card);
             commit(connectionWrapper);
+            logger.info("Card saved");
+            return id;
         } catch (SQLException e) {
             rollback(connectionWrapper);
             throw new PaymentException(e);
@@ -59,15 +74,27 @@ class FormOfPaymentAPI extends AbstractAPI {
         }
     }
 
-    // public Boleto generateBoleto() throws PaymentException {
-        
-    // }
-
-    private static LocalDate getValidDateLimit() {
-        return LocalDate.now().plusMonths(1).minusDays(1);
+    public UUID generateBoleto() throws PaymentException {
+        ConnectionWrapper connectionWrapper = null;
+        try {
+            connectionWrapper = getTransactionalConnectionWrapper();
+            UUID id = new FormOfPaymentRepository(connectionWrapper).insert(new Boleto(Integer.toString(new Random().nextInt())));
+            commit(connectionWrapper);
+            logger.info("Boleto saved");
+            return id;
+        } catch (SQLException e) {
+            rollback(connectionWrapper);
+            throw new PaymentException(e);
+        } finally {
+            close(connectionWrapper);
+        }
     }
 
-    private boolean validSequence(String number) {
+    private static LocalDate getValidDateLimit() {
+        return LocalDate.now().with(TemporalAdjusters.lastDayOfMonth());
+    }
+
+    private boolean validSequence(String number) { //TODO: check
         int[] ints = new int[number.length()];
 		for (int i = 0; i < number.length(); i++) {
 			ints[i] = Integer.parseInt(number.substring(i, i + 1));

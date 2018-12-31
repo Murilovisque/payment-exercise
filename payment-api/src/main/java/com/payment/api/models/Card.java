@@ -1,12 +1,14 @@
 package com.payment.api.models;
 
 import java.time.LocalDate;
+import java.time.temporal.TemporalAdjusters;
+import java.util.UUID;
 
 import com.google.gson.annotations.Expose;
 
 public class Card {
     @Expose(serialize=false) //TODO: test it
-    private Long id;
+    private UUID id;
     private String holderName;
     private String number;
     private LocalDate expirationDate;
@@ -19,13 +21,13 @@ public class Card {
         this.cvv = cvv;
     }
 
-    public Card(Long id, String holderName, String number, LocalDate expirationDate, String cvv) {
+    public Card(UUID id, String holderName, String number, LocalDate expirationDate, String cvv) {
         this(holderName, number, expirationDate, cvv);
         this.id = id;
     }
 
     public void normalizeExpirationDate() {
-        expirationDate = expirationDate.plusMonths(1).minusDays(1);
+        expirationDate = expirationDate.with(TemporalAdjusters.lastDayOfMonth());
     }
 
     public String getHolderName() {
@@ -44,7 +46,7 @@ public class Card {
         return cvv;
     }
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 }

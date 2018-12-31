@@ -1,7 +1,6 @@
 package com.payment.api.repositories;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.sql.SQLException;
@@ -39,16 +38,18 @@ public class PaymentRepositoryTest {
 
     @Test
     public void test1_ShouldReturnEmptyPayment() throws SQLException {
-        assertFalse(paymentRepository.getPaymentById(TestUtils.PAYMENT_ID_1).isPresent());
+        new BuyerRepositoryTest().test2_ShouldInsertBuyer();
+        Buyer buyer = new BuyerRepository(connectionWrapper).getWithCPF(TestUtils.BUYER_1_CPF).get();
+        List<Payment> pays = paymentRepository.getPaymentWithBuyerId(buyer.getId());
+        assertTrue(pays.isEmpty());
     }
 
     @Test
     public void test2_ShouldInsertCard() throws SQLException {        
-        new FormOfPaymentRepositoryTest().test2_ShouldInsertCard();
-        new BuyerRepositoryTest().test2_ShouldInsertBuyer();
+        new FormOfPaymentRepositoryTest().test2_ShouldInsertCard();        
         connectionWrapper = TestUtils.getTransactionConnectionWrapper();
-        Card card = new FormOfPaymentRepository(connectionWrapper).getCardByNumber(TestUtils.CARD_NUMBER_1).get();
-        Buyer buyer = new BuyerRepository(connectionWrapper).getByCPF(TestUtils.BUYER_1_CPF).get();
+        Card card = new FormOfPaymentRepository(connectionWrapper).getCardWithNumber(TestUtils.CARD_NUMBER_1).get();
+        Buyer buyer = new BuyerRepository(connectionWrapper).getWithCPF(TestUtils.BUYER_1_CPF).get();
         
         paymentRepository = new PaymentRepository(connectionWrapper);
         paymentRepository.insert(TestUtils.API_CLIENT_ID_1, TestUtils.getPaymentOne(card), card.getId(), buyer.getId());
@@ -58,10 +59,10 @@ public class PaymentRepositoryTest {
 
     @Test
     public void test3_ShouldReturnOneCreditCardPayment() throws SQLException {
-        Buyer buyer = new BuyerRepository(connectionWrapper).getByCPF(TestUtils.BUYER_1_CPF).get();
-        List<Payment> pays = paymentRepository.getPaymentByBuyerId(buyer.getId());
+        Buyer buyer = new BuyerRepository(connectionWrapper).getWithCPF(TestUtils.BUYER_1_CPF).get();
+        List<Payment> pays = paymentRepository.getPaymentWithBuyerId(buyer.getId());
         assertEquals(1, pays.size());
-        Optional<Payment> pay = paymentRepository.getPaymentById(pays.get(0).getId());
+        Optional<Payment> pay = paymentRepository.getPaymentWithId(pays.get(0).getId());
         assertTrue(pay.isPresent());
 
         for (Payment p : Arrays.asList(pay.get(), pays.get(0))) {

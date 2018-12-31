@@ -78,6 +78,6 @@ public class FormOfPaymentAPITest {
     public void test3_ShouldReturnTrueWhenCardNumberExits() throws PaymentException {
         Optional<Card> card = cardAPI.getCardWithNumber(TestUtils.CARD_NUMBER_1);
         assertTrue(card.isPresent());
-        //TODO: CONTINUE TEST
+        TestUtils.assertAllFields(TestUtils.getCardOne(), card.get());
     }
 }

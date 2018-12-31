@@ -22,7 +22,7 @@ public class ConnectionWrapper {
     }
 
     public Connection getConnection() throws SQLException {
-        if (connection == null)
+        if (connection == null || connection.isClosed())
             connection = connectionProvider.getConnection();                    
         if (getType().equals(ConnectionWrapper.Type.TRANSACTIONAL))
             connection.setAutoCommit(false);
@@ -45,7 +45,8 @@ public class ConnectionWrapper {
         for (Statement stmt : stmts) {
             stmt.executeBatch();
             stmt.close();
-        }            
+        }
+        stmts.clear();   
     }
     
     public void setApiStartedTransation(AbstractAPI apiStartedTransation) {
@@ -54,7 +55,7 @@ public class ConnectionWrapper {
     }
 
     public boolean isAPIStartedTransaction(AbstractAPI api) {
-        return apiStartedTransation.equals(api);
+        return api.equals(apiStartedTransation);
     }
 
     public enum Type {

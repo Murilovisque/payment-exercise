@@ -1,7 +1,9 @@
 package com.payment.api.models;
 
+import java.util.UUID;
+
 public class Buyer {
-    private Long id;
+    private UUID id;
     private String name;
     private String cpf;
     private String email;
@@ -12,7 +14,7 @@ public class Buyer {
         this.email = email;
 	}
 
-    public Buyer(Long id, String name, String cpf, String email) {
+    public Buyer(UUID id, String name, String cpf, String email) {
         this(name, cpf, email);
         this.id = id;
     }   
@@ -29,7 +31,7 @@ public class Buyer {
         return email;
     }
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 }

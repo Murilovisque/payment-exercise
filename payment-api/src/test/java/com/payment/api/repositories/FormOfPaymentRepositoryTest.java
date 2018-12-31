@@ -35,7 +35,7 @@ public class FormOfPaymentRepositoryTest {
 
     @Test
     public void test1_ShouldReturnEmptyCard() throws SQLException {
-        assertFalse(formOfPaymentRepository.getCardByNumber(TestUtils.CARD_NUMBER_1).isPresent());
+        assertFalse(formOfPaymentRepository.getCardWithNumber(TestUtils.CARD_NUMBER_1).isPresent());
     }
 
     @Test
@@ -49,11 +49,21 @@ public class FormOfPaymentRepositoryTest {
 
     @Test
     public void test3_ShouldReturnOneCard() throws SQLException {
-        Optional<Card> card = formOfPaymentRepository.getCardByNumber(TestUtils.CARD_NUMBER_1);
+        Optional<Card> card = formOfPaymentRepository.getCardWithNumber(TestUtils.CARD_NUMBER_1);
         assertTrue(card.isPresent());
         assertEquals(TestUtils.getCardOne().getHolderName(), card.get().getHolderName());
         assertEquals(TestUtils.getCardOne().getNumber(), card.get().getNumber());
         assertEquals(TestUtils.getCardOne().getExpirationDate(), card.get().getExpirationDate());
         assertEquals(TestUtils.getCardOne().getCvv(), card.get().getCvv());
+    }
+
+    @Test
+    public void test4_ShouldInsertBoleto() throws SQLException {
+        connectionWrapper  = TestUtils.getTransactionConnectionWrapper();
+        formOfPaymentRepository = new FormOfPaymentRepository(connectionWrapper);
+        formOfPaymentRepository.insert(TestUtils.getBoletoOne());
+        connectionWrapper.executeBatchStatements();
+        connectionWrapper.getConnection().commit();
+        assertTrue(formOfPaymentRepository.getBoletoWithNumber(TestUtils.BOLETO_NUMBER).isPresent());
     }
 }

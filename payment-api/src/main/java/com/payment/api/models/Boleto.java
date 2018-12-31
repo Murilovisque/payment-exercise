@@ -1,16 +1,22 @@
 package com.payment.api.models;
 
+import java.util.UUID;
+
 public class Boleto {
 
-    private Long id;
+    private UUID id;
     private String number;
 
-    public Boleto(long id, String number) {
-        this.id = id;
+    public Boleto(String number) {
         this.number = number;
+    }
+
+    public Boleto(UUID id, String number) {
+        this(number);
+        this.id = id;
 	}
 
-	public Long getId() {
+	public UUID getId() {
         return id;
     }
 

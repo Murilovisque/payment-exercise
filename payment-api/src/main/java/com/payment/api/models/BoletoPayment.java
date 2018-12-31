@@ -7,6 +7,10 @@ public class BoletoPayment extends Payment {
 
     private Boleto boleto;
 
+    public BoletoPayment(BigDecimal amount) {
+        super(amount, Payment.Status.GENERATED);
+    }
+
     public BoletoPayment(UUID id, BigDecimal amount, Status status, Boleto boleto) {
         super(id, amount, status);
         this.boleto = boleto;

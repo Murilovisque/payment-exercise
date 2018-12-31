@@ -34,12 +34,9 @@ public class AbstractAPI {
     private ConnectionWrapper getConnectionWrapper(ConnectionWrapper.Type type) {
         if (connectionWrapper == null)
             connectionWrapper = new ConnectionWrapper(connectionProvider, type);
-        if (type.equals(Type.TRANSACTIONAL)) {
-            connectionWrapper.setApiStartedTransation(this);
-            if (!connectionWrapper.getType().equals(type)) {
-                connectionWrapper.setType(type);
-            }
-        }            
+        if (type.equals(Type.TRANSACTIONAL) && !connectionWrapper.getType().equals(type))
+            connectionWrapper.setType(type);
+        connectionWrapper.setApiStartedTransation(this);         
         return connectionWrapper;
     }
 
@@ -61,7 +58,7 @@ public class AbstractAPI {
 
     protected final void close(ConnectionWrapper conn) throws PaymentException {
         try {
-            if (conn != null)            
+            if (conn != null  && conn.isAPIStartedTransaction(this))            
                 conn.getConnection().close();
         } catch (SQLException e) {
             throw new PaymentException(e);

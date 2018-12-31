@@ -7,8 +7,8 @@ public class CreditCardPayment extends Payment {
 
     private Card card;
 
-    public CreditCardPayment(BigDecimal amount, Status status, Card card) {
-        super(amount, status);
+    public CreditCardPayment(BigDecimal amount, Card card) {
+        super(amount, Payment.Status.PAID);
         this.card = card;
     }
 
