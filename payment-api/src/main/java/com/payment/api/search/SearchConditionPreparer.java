@@ -1,4 +1,4 @@
-package com.payment.api.repositories.search;
+package com.payment.api.search;
 
 @FunctionalInterface
 public interface SearchConditionPreparer {

@@ -37,16 +37,14 @@ public class PaymentRepositoryTest {
     }
 
     @Test
-    public void test1_ShouldReturnEmptyPayment() throws SQLException {
-        new BuyerRepositoryTest().test2_ShouldInsertBuyer();
-        Buyer buyer = new BuyerRepository(connectionWrapper).getWithCPF(TestUtils.BUYER_1_CPF).get();
-        List<Payment> pays = paymentRepository.getPaymentWithBuyerId(buyer.getId());
-        assertTrue(pays.isEmpty());
+    public void test1_ShouldReturnEmptyPayment() throws SQLException {        
+        assertTrue(paymentRepository.getPayments(TestUtils.QUERY_LIMIT).isEmpty());
     }
 
     @Test
     public void test2_ShouldInsertCard() throws SQLException {        
-        new FormOfPaymentRepositoryTest().test2_ShouldInsertCard();        
+        new FormOfPaymentRepositoryTest().test2_ShouldInsertCard();   
+        new BuyerRepositoryTest().test2_ShouldInsertBuyer();     
         connectionWrapper = TestUtils.getTransactionConnectionWrapper();
         Card card = new FormOfPaymentRepository(connectionWrapper).getCardWithNumber(TestUtils.CARD_NUMBER_1).get();
         Buyer buyer = new BuyerRepository(connectionWrapper).getWithCPF(TestUtils.BUYER_1_CPF).get();
@@ -59,9 +57,8 @@ public class PaymentRepositoryTest {
 
     @Test
     public void test3_ShouldReturnOneCreditCardPayment() throws SQLException {
-        Buyer buyer = new BuyerRepository(connectionWrapper).getWithCPF(TestUtils.BUYER_1_CPF).get();
-        List<Payment> pays = paymentRepository.getPaymentWithBuyerId(buyer.getId());
-        assertEquals(1, pays.size());
+        List<Payment> pays = paymentRepository.getPayments(TestUtils.QUERY_LIMIT);
+        assertEquals(1, pays.size());        
         Optional<Payment> pay = paymentRepository.getPaymentWithId(pays.get(0).getId());
         assertTrue(pay.isPresent());
 
@@ -71,6 +68,14 @@ public class PaymentRepositoryTest {
             assertEquals(TestUtils.PAYMENT_TYPE_1, p.getType());
         }
     }
-    
 
+    @Test
+    public void test4_ShouldReturnOneCreditCardPaymentOfBuyer() throws SQLException {
+        Buyer buyer = new BuyerRepository(connectionWrapper).getWithCPF(TestUtils.BUYER_1_CPF).get();
+        List<Payment> pays = paymentRepository.getPaymentWithBuyerId(buyer.getId());
+        assertEquals(1, pays.size());
+        assertEquals(TestUtils.PAYMENT_AMOUNT_1, pays.get(0).getAmount());
+        assertEquals(TestUtils.PAYMENT_STATUS_1, pays.get(0).getStatus());
+        assertEquals(TestUtils.PAYMENT_TYPE_1, pays.get(0).getType());
+    }
 }

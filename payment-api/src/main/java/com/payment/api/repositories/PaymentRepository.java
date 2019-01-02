@@ -19,6 +19,8 @@ public class PaymentRepository extends AbstractRepository {
 	public static final String COLUMN_ID = "id_payment";
 	public static final String COLUMN_AMOUNT = "amount";	
 	public static final String COLUMN_STATUS = "status";
+	private static final String GET_PAYMENT = "select p.id_payment, p.amount, p.status, p.id_form_of_payment, fp.type, fp.data from payment p"
+	+ " inner join form_of_payment fp on fp.id_form_of_payment = p.id_form_of_payment";
 	private static final String GET_BY_ID = "select p.id_payment, p.amount, p.status, p.id_form_of_payment, fp.type, fp.data from payment p"
 		+ " inner join form_of_payment fp on fp.id_form_of_payment = p.id_form_of_payment where p.id_payment = ?";
 	private static final String INSERT_PAYMENT = "insert into payment(id_payment, amount, status, id_form_of_payment, id_buyer, id_api_client)"
@@ -28,7 +30,17 @@ public class PaymentRepository extends AbstractRepository {
 	
 	public PaymentRepository(ConnectionWrapper connectionWrapper) {
         super(connectionWrapper);
-    }
+	}
+	
+	public List<Payment> getPayments(int limit) throws SQLException {
+		try (PreparedStatement stmt = getConnection().prepareStatement(String.format("%s LIMIT %d", GET_PAYMENT, limit));
+			ResultSet rs = stmt.executeQuery()) {
+			List<Payment> pays = new ArrayList<>();
+			while(rs.next())
+				pays.add(getPaymentFromResultSet(rs));
+			return pays;
+		}
+	}
 
 	public Optional<Payment> getPaymentWithId(UUID id) throws SQLException {
         try (PreparedStatement stmt = getConnection().prepareStatement(GET_BY_ID)) {

@@ -1,5 +1,6 @@
 package com.payment.api;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -58,11 +59,47 @@ public class FormOfPaymentAPITest {
         Card cardWithLessThan13Chars = new Card(TestUtils.CARD_HOLDER_NAME_1, "441424124172",
             TestUtils.CARD_EXPIRATION_DATE_1, TestUtils.CARD_CVV_1);
         assertFalse(cardAPI.isValidCard(cardWithLessThan13Chars));
-        Card cardWithMoreThan16Chars = new Card(TestUtils.CARD_HOLDER_NAME_1, "44142412451424121",
+        Card cardWithMoreThan19Chars = new Card(TestUtils.CARD_HOLDER_NAME_1, "44142412451424121964",
             TestUtils.CARD_EXPIRATION_DATE_1, TestUtils.CARD_CVV_1);
-        assertFalse(cardAPI.isValidCard(cardWithMoreThan16Chars));
+        assertFalse(cardAPI.isValidCard(cardWithMoreThan19Chars));
     }
 
+    @Test
+    public void shouldReturnValidCardWhenNumberIsValid() {
+        assertTrue(cardAPI.isValidCard(TestUtils.getCardOne()));
+        TestUtils.VALID_CARD_NUMBERS.stream().map(number -> new Card(TestUtils.CARD_HOLDER_NAME_1, number,
+            TestUtils.CARD_EXPIRATION_DATE_1, TestUtils.CARD_CVV_1)).forEach(cardAPI::isValidCard);
+    }
+
+    @Test
+    public void shouldReturnMasterCardBrand() {
+        for (String number : TestUtils.VALID_MASTER_CARD_NUMBER)
+            assertEquals(Card.Brand.MASTERCARD, cardAPI.validAndGetBrand(number).get());
+    }
+
+    @Test
+    public void shouldReturnMaestroBrand() {
+        for (String number : TestUtils.VALID_MAESTRO_NUMBER)
+            assertEquals(Card.Brand.MAESTRO, cardAPI.validAndGetBrand(number).get());
+    }
+
+    @Test
+    public void shouldReturnAmericanExpressBrand() {
+        for (String number : TestUtils.VALID_AMERICAN_EXPRESS_NUMBER)
+            assertEquals(Card.Brand.AMERICAN_EXPRESS, cardAPI.validAndGetBrand(number).get());
+    }
+
+    @Test
+    public void shouldReturnVisaBrand() {
+        for (String number : TestUtils.VALID_VISA_NUMBER)
+            assertEquals(Card.Brand.VISA, cardAPI.validAndGetBrand(number).get());
+    }
+
+    @Test
+    public void shouldReturnDiscoverBrand() {
+        for (String number : TestUtils.VALID_DISCOVER_NUMBER)
+            assertEquals(Card.Brand.DISCOVER, cardAPI.validAndGetBrand(number).get());
+    }
 
     @Test
     public void test1_ShouldReturnFalseWhenCardNumberDoesNotExits() throws PaymentException {

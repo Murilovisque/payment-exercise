@@ -10,7 +10,7 @@ import com.payment.api.models.Buyer;
 import com.payment.api.repositories.BuyerRepository;
 import com.payment.api.repositories.ConnectionProvider;
 import com.payment.api.repositories.ConnectionWrapper;
-import com.payment.api.repositories.search.SearchConditions;
+import com.payment.api.search.SearchConditions;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,6 +48,18 @@ public class BuyerAPI extends AbstractAPI {
         try {
             connWrapper = getConnectionWrapper();
             return new BuyerRepository(connWrapper).getWithCPF(cpf);
+        } catch (SQLException e) {
+            throw new PaymentException(e);
+		} finally {
+            close(connWrapper);
+        }
+    }
+
+    public Optional<Buyer> getBuyerWithId(UUID cpf) throws PaymentException {
+        ConnectionWrapper connWrapper = null;
+        try {
+            connWrapper = getConnectionWrapper();
+            return new BuyerRepository(connWrapper).getWithId(cpf);
         } catch (SQLException e) {
             throw new PaymentException(e);
 		} finally {

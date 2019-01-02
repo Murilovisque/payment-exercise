@@ -10,7 +10,7 @@ import java.util.Optional;
 
 import com.payment.api.TestUtils;
 import com.payment.api.models.Buyer;
-import com.payment.api.repositories.search.SearchConditions;
+import com.payment.api.search.SearchConditions;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -58,8 +58,11 @@ public class BuyerRepositoryTest {
     }
     
     @Test
-    public void test3_ShouldReturnBuyerWithCPF() throws SQLException {
+    public void test3_ShouldReturnBuyerByCPFAndById() throws SQLException {
         Optional<Buyer> buy = buyerRepository.getWithCPF(TestUtils.BUYER_1_CPF);
+        assertTrue(buy.isPresent());
+        TestUtils.assertAllFields(TestUtils.getBuyerOne(), buy.get());
+        buy = buyerRepository.getWithId(buy.get().getId());
         assertTrue(buy.isPresent());
         TestUtils.assertAllFields(TestUtils.getBuyerOne(), buy.get());
     }

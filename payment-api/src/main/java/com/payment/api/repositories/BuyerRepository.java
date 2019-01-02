@@ -11,8 +11,8 @@ import java.util.Set;
 import java.util.UUID;
 
 import com.payment.api.models.Buyer;
-import com.payment.api.repositories.search.SearchConditionPreparer;
-import com.payment.api.repositories.search.SearchConditions;
+import com.payment.api.search.SearchConditionPreparer;
+import com.payment.api.search.SearchConditions;
 
 public class BuyerRepository extends AbstractRepository {
     
@@ -23,7 +23,7 @@ public class BuyerRepository extends AbstractRepository {
     public static final String COLUMN_EMAIL = "email";
     private static final String GET_BUYERS = "select id_buyer, name, cpf, email from buyer";
     private static final String GET_WITH_CPF = GET_BUYERS + " where cpf = ?";
-    private static final String GET_WITH_ID = GET_BUYERS + " where id = ?";
+    private static final String GET_WITH_ID = GET_BUYERS + " where id_buyer = ?";
     private static final String INSERT_BUYER = "insert into buyer (id_buyer, name, email, cpf) values (?, ?, ?, ?)";
     private static final Set<SearchConditionPreparer> SEARCH_ARGS_HANDLER;
 

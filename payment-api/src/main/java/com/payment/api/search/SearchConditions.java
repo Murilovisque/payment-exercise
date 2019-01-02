@@ -1,4 +1,4 @@
-package com.payment.api.repositories.search;
+package com.payment.api.search;
 
 import java.util.HashMap;
 import java.util.Map;

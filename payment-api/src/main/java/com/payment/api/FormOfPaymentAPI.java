@@ -11,6 +11,7 @@ import java.util.regex.Pattern;
 import com.payment.api.exceptions.PaymentException;
 import com.payment.api.models.Boleto;
 import com.payment.api.models.Card;
+import com.payment.api.models.Card.Brand;
 import com.payment.api.repositories.FormOfPaymentRepository;
 
 import org.slf4j.Logger;
@@ -19,10 +20,10 @@ import org.slf4j.LoggerFactory;
 import com.payment.api.repositories.ConnectionProvider;
 import com.payment.api.repositories.ConnectionWrapper;
 
-class FormOfPaymentAPI extends AbstractAPI {
+public class FormOfPaymentAPI extends AbstractAPI {
 
     private static final Logger logger = LoggerFactory.getLogger(FormOfPaymentAPI.class);
-    private static final Pattern CARD_NUMBER_REGEX = Pattern.compile("\\d{13,16}");
+    private static final Pattern CARD_NUMBER_REGEX = Pattern.compile("\\d{13,19}");
 
     public FormOfPaymentAPI(APIClientProvider apiClientProvider, ConnectionWrapper connectionWrapper) {
         super(apiClientProvider, connectionWrapper);
@@ -41,9 +42,21 @@ class FormOfPaymentAPI extends AbstractAPI {
         String number = card.getNumber();
         if (!CARD_NUMBER_REGEX.matcher(number).matches())
             return false;
-        // if (validSequence(number))//TODO: Validar bandeiras
-        //     return false;
+        if (validSequence(number))
+            return false;
         return true;
+    }
+
+    public Optional<Brand> validAndGetBrand(String cardNumber) {
+        if (CARD_NUMBER_REGEX.matcher(cardNumber).matches()) {
+            for (Brand brand : Card.Brand.values()) {
+                if (brand.getAcceptLengh().stream().anyMatch(l -> l.equals(cardNumber.length()))
+                        && brand.getIssuerIdentificationNumbers().parallelStream().anyMatch(iin -> cardNumber.startsWith(iin))) {
+                    return Optional.of(brand);
+                }
+            }
+        }
+        return Optional.empty();
     }
 
     public Optional<Card> getCardWithNumber(String number) throws PaymentException {
@@ -96,20 +109,20 @@ class FormOfPaymentAPI extends AbstractAPI {
 
     private boolean validSequence(String number) { //TODO: check
         int[] ints = new int[number.length()];
-		for (int i = 0; i < number.length(); i++) {
+		for (int i = 0; i < number.length(); i++)
 			ints[i] = Integer.parseInt(number.substring(i, i + 1));
-		}
-		for (int i = ints.length - 2; i >= 0; i = i - 2) {
+        int sumOfDoubleEvenPlace = 0;
+		for (int i = ints.length - 2; i >= 0; i -= 2) {
 			int j = ints[i];
 			j = j * 2;
-			if (j > 9) {
-				j = j % 10 + 1;
+			if (j > 8) {
+				j = (j / 10) + (1 % 10);
 			}
-			ints[i] = j;
-		}
-		int sum = 0;
-		for (int i = 0; i < ints.length; i++)
-			sum += ints[i];
-		return sum % 10 == 0;
+			sumOfDoubleEvenPlace += j;
+        }
+        int sumOfOddPlace = 0;
+        for (int i = ints.length - 1; i >= 0; i -= 2)  
+            sumOfOddPlace += i;
+		return (sumOfDoubleEvenPlace + sumOfOddPlace) % 10 == 0;
     }
 }

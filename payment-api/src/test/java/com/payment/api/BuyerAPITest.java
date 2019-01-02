@@ -11,7 +11,7 @@ import com.payment.api.exceptions.PaymentException;
 import com.payment.api.models.Buyer;
 import com.payment.api.repositories.BuyerRepository;
 import com.payment.api.repositories.PaymentRepository;
-import com.payment.api.repositories.search.SearchConditions;
+import com.payment.api.search.SearchConditions;
 
 import org.junit.Before;
 import org.junit.BeforeClass;

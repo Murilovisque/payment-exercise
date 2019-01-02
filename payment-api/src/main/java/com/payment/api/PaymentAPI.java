@@ -1,6 +1,7 @@
 package com.payment.api;
 
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -65,6 +66,32 @@ public class PaymentAPI extends AbstractAPI {
         try {
             connectionWrapper = getConnectionWrapper();
             return new PaymentRepository(connectionWrapper).getPaymentWithId(id);
+        } catch (SQLException e) {
+            rollback(connectionWrapper);
+            throw new PaymentException(e);
+        } finally {
+            close(connectionWrapper);
+        }       
+    }
+
+    public List<Payment> getPayments(int limit) throws PaymentException {
+        ConnectionWrapper connectionWrapper = null;
+        try {
+            connectionWrapper = getConnectionWrapper();
+            return new PaymentRepository(connectionWrapper).getPayments(limit);
+        } catch (SQLException e) {
+            rollback(connectionWrapper);
+            throw new PaymentException(e);
+        } finally {
+            close(connectionWrapper);
+        }       
+    }
+
+    public List<Payment> getPaymentsOfBuyer(UUID buyerId) throws PaymentException {
+        ConnectionWrapper connectionWrapper = null;
+        try {
+            connectionWrapper = getConnectionWrapper();
+            return new PaymentRepository(connectionWrapper).getPaymentWithBuyerId(buyerId);
         } catch (SQLException e) {
             rollback(connectionWrapper);
             throw new PaymentException(e);
