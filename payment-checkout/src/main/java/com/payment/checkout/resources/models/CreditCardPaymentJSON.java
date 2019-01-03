@@ -9,6 +9,14 @@ public class CreditCardPaymentJSON {
     private BuyerJSON buyer;
     private CardJSON card;
 
+    public CreditCardPaymentJSON() {}
+
+    public CreditCardPaymentJSON(BigDecimal amount, BuyerJSON buyer, CardJSON card) {
+        this.amount = amount;
+        this.buyer = buyer;
+        this.card = card;
+    }
+
     public BigDecimal getAmount() {
         return amount;
     }

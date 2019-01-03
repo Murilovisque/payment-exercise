@@ -1,0 +1,14 @@
+<configuration>        
+        <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+                <encoder>
+                        <pattern>%date{MMM dd HH:mm:ss} %p %logger{0}%X{PaymentCheckout-RequestId} * %msg%n</pattern>
+                </encoder>
+        </appender>     
+        
+        <root level="DEBUG" />
+        <logger name="com.payment">
+                <level value="DEBUG" />
+                <appender-ref ref="STDOUT" />
+        </logger>
+        
+</configuration>

@@ -1,22 +1,26 @@
-package com.payment.checkout.resources.models;
+package com.payment.checkout.resources;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
-@JSONRequiredFieldsAnnotation
-public class CardJSON {
-
+public class CardTestJSON {
+    private UUID id;
     private String holderName;
     private String number;
     private LocalDate expirationDate;
     private String cvv;
 
-    public CardJSON() {}
+    public CardTestJSON() {}
 
-    public CardJSON(String holderName, String number, LocalDate expirationDate, String cvv) {
+    public CardTestJSON(String holderName, String number, LocalDate expirationDate, String cvv) {
         this.holderName = holderName;
         this.number = number;
         this.expirationDate = expirationDate;
-        this.cvv = cvv;
+        this.cvv =  cvv;
+    }
+
+    public UUID getId() {
+        return id;
     }
 
     public String getHolderName() {

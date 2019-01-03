@@ -12,14 +12,14 @@ import com.payment.checkout.exceptions.InitializationPaymenCheckoutException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class DatabaseConfig {
+public class DatabaseConfig {
 
-    private static Logger logger = LoggerFactory.getLogger(DatabaseConfig.class);
-    private static final String CONFIG_PATH_PROPERTY = "database.config.path";
+    public static final String CONFIG_PATH_PROPERTY = "database.config.path";
+    private static final Logger logger = LoggerFactory.getLogger(DatabaseConfig.class);    
     private static Map<String, String> jdbcProperties = new HashMap<>();
     private static Map<String, String> datasourceProperties = new HashMap<>();
 
-    public static void load() throws InitializationPaymenCheckoutException {
+    static void load() throws InitializationPaymenCheckoutException {
         try {
             String file = System.getProperty(CONFIG_PATH_PROPERTY);
             logger.info("Trying to load the file {}", file);

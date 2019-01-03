@@ -20,13 +20,12 @@ public class PaymentRepository extends AbstractRepository {
 	public static final String COLUMN_AMOUNT = "amount";	
 	public static final String COLUMN_STATUS = "status";
 	private static final String GET_PAYMENT = "select p.id_payment, p.amount, p.status, p.id_form_of_payment, fp.type, fp.data from payment p"
-	+ " inner join form_of_payment fp on fp.id_form_of_payment = p.id_form_of_payment";
-	private static final String GET_BY_ID = "select p.id_payment, p.amount, p.status, p.id_form_of_payment, fp.type, fp.data from payment p"
-		+ " inner join form_of_payment fp on fp.id_form_of_payment = p.id_form_of_payment where p.id_payment = ?";
+		+ " inner join form_of_payment fp on fp.id_form_of_payment = p.id_form_of_payment";
+	private static final String GET_BY_ID = GET_PAYMENT + " where p.id_payment = ?";
+	private static final String GET_BY_BUYER_ID = GET_PAYMENT + " where p.id_buyer = ?";
 	private static final String INSERT_PAYMENT = "insert into payment(id_payment, amount, status, id_form_of_payment, id_buyer, id_api_client)"
 		+ "values (?, ?, ?::PAYMENT_STATUS, ?, ?, ?)";
-	private static final String GET_BY_BUYER_ID = "select p.id_payment, p.amount, p.status, p.id_form_of_payment, fp.type, fp.data from payment p"
-		+ " inner join form_of_payment fp on fp.id_form_of_payment = p.id_form_of_payment where p.id_buyer = ?";
+	
 	
 	public PaymentRepository(ConnectionWrapper connectionWrapper) {
         super(connectionWrapper);

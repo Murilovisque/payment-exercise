@@ -28,6 +28,7 @@ public class PaymentCheckout {
 
     public void start() throws Exception {
         try {
+            loadConfigs();
             buildConnectionPool();
             releaseHTTPResources();
             releaseHTTPFilters();
@@ -36,17 +37,19 @@ public class PaymentCheckout {
             logger.error("Project initialization problems", ex);
             throw ex;
         }
+    }    
+
+    private void loadConfigs() throws InitializationPaymenCheckoutException {
+        PaymentCheckoutConfig.load();
     }
 
-    
-
-    public static void buildConnectionPool() throws InitializationPaymenCheckoutException {
+    public void buildConnectionPool() throws InitializationPaymenCheckoutException {
         ConnectionPool.getInstance().build();
         logger.info("Connection pool built");
     }
 
-    public static void releaseHTTPResources() {
-        Spark.port(8080);
+    public void releaseHTTPResources() {
+        Spark.port(PaymentCheckoutConfig.getApplicationPort());
         PaymentResources.releaseHttpResources();
         FormOfPaymentResources.releaseHttpResources();
         BuyerResources.releaseHttpResources();

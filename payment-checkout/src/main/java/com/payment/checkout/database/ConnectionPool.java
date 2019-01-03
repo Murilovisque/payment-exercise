@@ -27,7 +27,6 @@ public class ConnectionPool implements ConnectionProvider {
         dataSource = new HikariDataSource(config);
     }
 
-
     public static ConnectionPool getInstance() {
         return instance;
     }
@@ -35,5 +34,9 @@ public class ConnectionPool implements ConnectionProvider {
     @Override
     public Connection getConnection() throws SQLException {
         return dataSource.getConnection();
+    }
+
+    public void close() {
+        dataSource.close();
     }
 }

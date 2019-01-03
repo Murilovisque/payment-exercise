@@ -1,12 +1,13 @@
 package com.payment.checkout.resources;
 
+import static com.payment.checkout.HTTPUtils.HTTP_STATUS_NOT_FOUND;
 import static com.payment.checkout.HTTPUtils.buildSearchFromRequest;
 import static com.payment.checkout.HTTPUtils.handleException;
-import static com.payment.checkout.HTTPUtils.setResponse;
 import static com.payment.checkout.HTTPUtils.parseUUID;
+import static com.payment.checkout.HTTPUtils.setResponse;
+import static com.payment.checkout.HTTPUtils.getLimitRetrieveData;
 import static spark.Spark.get;
 import static spark.Spark.path;
-import static com.payment.checkout.HTTPUtils.HTTP_STATUS_NOT_FOUND;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -25,7 +26,7 @@ public class BuyerResources {
         path("/payment-checkout/api/v1/buyers", () -> {
             get("", (req, res) -> {
                 try {
-                    return gson.toJson(APIFactory.getBuyerAPI().search(buildSearchFromRequest(req), 50));
+                    return gson.toJson(APIFactory.getBuyerAPI().search(buildSearchFromRequest(req), getLimitRetrieveData(req)));
                 } catch (Exception e) {
                     return handleException(e, res);
                 }

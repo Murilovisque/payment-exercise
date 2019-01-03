@@ -47,6 +47,18 @@
       <version>2.8.5</version>
     </dependency>
     <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <version>3.8.1</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>fluent-hc</artifactId>
+        <version>4.5.6</version>
+        <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>com.payment.api</groupId>
       <artifactId>payment-api</artifactId>
       <version>1.0-SNAPSHOT</version>

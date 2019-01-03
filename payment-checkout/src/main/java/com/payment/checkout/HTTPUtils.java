@@ -1,6 +1,7 @@
 package com.payment.checkout;
 
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -22,14 +23,16 @@ import spark.Request;
 import spark.Response;
 
 public class HTTPUtils {
-
-    private static final Logger logger = LoggerFactory.getLogger(HTTPUtils.class);
+    
     public static final int HTTP_STATUS_CREATED = 201;
     public static final int HTTP_STATUS_BAD_REQUEST = 400;
     public static final int HTTP_STATUS_INTERNAL_SERVER_ERROR = 500;
     public static final int HTTP_STATUS_UNAUTHORIZED = 401;
     public static final int HTTP_STATUS_NOT_FOUND = 404;
     public static final int SERVICE_UNAVAILABLE = 503;
+    private static final Logger logger = LoggerFactory.getLogger(HTTPUtils.class);
+    private static final Pattern REGEX_NUMBER = Pattern.compile("\\d+");
+    private static final String LIMIT_QUERY_PARAM = "limit";
 
     private static final Gson gson = new GsonBuilder()
         .registerTypeAdapter(BuyerJSON.class, new JSONRequiredFieldsDeserializer<BuyerJSON>())
@@ -66,7 +69,8 @@ public class HTTPUtils {
     public static SearchConditions buildSearchFromRequest(Request req) {
         SearchConditions search = new SearchConditions();
         for (String s : req.queryParams())
-            search.put(s, req.queryParams(s));
+            if (!s.equals(LIMIT_QUERY_PARAM))                
+                search.put(s, req.queryParams(s));
         return search;
     }
 
@@ -78,7 +82,14 @@ public class HTTPUtils {
     }
 
     public static String handleException(PaymentException e, Response res) {
-        logger.error("Internal error em dependêncy Payment-API", e);
+        logger.error("Internal error in Payment-API", e);
         return setResponse(res, HTTP_STATUS_INTERNAL_SERVER_ERROR, "");
+    }
+
+    public static int getLimitRetrieveData(Request req) {
+        String limit = req.queryParams(LIMIT_QUERY_PARAM);
+        if (limit != null && REGEX_NUMBER.matcher(limit).matches())
+            return Integer.valueOf(limit);
+        return PaymentCheckoutConfig.getDefaultLimitRetrieveData();
     }
 }

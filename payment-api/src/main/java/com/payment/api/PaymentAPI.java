@@ -6,7 +6,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import com.payment.api.exceptions.PaymentException;
-import com.payment.api.exceptions.UnauthorizedPaymentException;
+import com.payment.api.exceptions.InvalidArgumentPaymentException;
 import com.payment.api.models.Buyer;
 import com.payment.api.models.Card;
 import com.payment.api.models.CreditCardPayment;
@@ -40,7 +40,7 @@ public class PaymentAPI extends AbstractAPI {
                 } else if (formOfPaymentAPI.isValidCard(payCreditCard.getCard())) {
                     formOfPaymentId = formOfPaymentAPI.save(payCreditCard.getCard());
                 } else {
-                    throw new UnauthorizedPaymentException("Cartão de crédito não autorizado");
+                    throw new InvalidArgumentPaymentException("Cartão de crédito não autorizado");
                 }
             } else {
                 formOfPaymentId = formOfPaymentAPI.generateBoleto();

@@ -10,7 +10,7 @@ public abstract class Payment {
     private Status status;
 
     public Payment(BigDecimal amount, Status status) {
-        this.amount = amount;
+        this.amount = normalizeAmount(amount);
         this.status = status;
     }
 
@@ -55,5 +55,9 @@ public abstract class Payment {
                     return s;
             return null;
         }
+    }
+
+    private BigDecimal normalizeAmount(BigDecimal amount) {
+        return amount.setScale(2, BigDecimal.ROUND_HALF_EVEN);
     }
 }

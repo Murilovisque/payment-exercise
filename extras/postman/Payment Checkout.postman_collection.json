@@ -1,0 +1,296 @@
+{
+	"info": {
+		"_postman_id": "aed40393-c722-44e2-9a32-93a281eb675e",
+		"name": "Payment Checkout",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Boleto Payment - POST",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"amount\": 7.50,\n    \"buyer\": {\n    \t\"name\": \"Ciclano\",\n    \t\"cpf\": \"41325436777\",\n    \t\"email\": \"ciclano@gmail.com\"\n    }\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/payment-checkout/api/v1/payments/boletos",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"payment-checkout",
+						"api",
+						"v1",
+						"payments",
+						"boletos"
+					]
+				},
+				"description": "Criar uma transação de pagamento por boleto\n.Respotas\n\t.201 - Transação de pagamento criada\n\t.400 - Argumento da requisição inválido"
+			},
+			"response": []
+		},
+		{
+			"name": "Credit Card Payment - POST",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"amount\": 15.50,\n    \"card\": {\n    \t\"cvv\": \"123\",\n    \t\"number\": \"371449635398431\",\n    \t\"holderName\": \"Fulano\",\n    \t\"expirationDate\": {\n    \t\t\"day\": 30,\n    \t\t\"month\": 01,\n    \t\t\"year\": 2019\n    \t}\n    },\n    \"buyer\": {\n    \t\"name\": \"Fulano\",\n    \t\"cpf\": \"41231245660\",\n    \t\"email\": \"fulano@gmail.com\"\n    }\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/payment-checkout/api/v1/payments/credit-cards",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"payment-checkout",
+						"api",
+						"v1",
+						"payments",
+						"credit-cards"
+					]
+				},
+				"description": "Criar uma transação de pagamento por cartão de crédito\n.Respotas\n\t.201 - Transação de pagamento criada\n\t.400 - Argumento da requisição inválido"
+			},
+			"response": []
+		},
+		{
+			"name": "Buyer by ID - GET",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"amount\": 10.50,\n    \"card\": {\n    \t\"cvv\": \"123\",\n    \t\"number\": \"371449635398431\",\n    \t\"holderName\": \"Fulano\",\n    \t\"expirationDate\": {\n    \t\t\"day\": 31,\n    \t\t\"month\": 12,\n    \t\t\"year\": 2018\n    \t}\n    },\n    \"buyer\": {\n    \t\"name\": \"Fulano\",\n    \t\"cpf\": \"41231245660\",\n    \t\"email\": \"fulano@gmail.com\"\n    }\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/payment-checkout/api/v1/buyers/:id",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"payment-checkout",
+						"api",
+						"v1",
+						"buyers",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "c6873f96-84e4-484b-9ee3-3c0414bfa90"
+						}
+					]
+				},
+				"description": "Buscar um buyer pelo seu id\n\t.Resposta\n\t\t.Status: 200 - Registro encontrado\n\t\t.Status: 404 - Registro não encontrado"
+			},
+			"response": []
+		},
+		{
+			"name": "Payment by ID - GET",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "c3dc157b-04f1-473b-b3dc-bff0b42c3ce6",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:8080/payment-checkout/api/v1/payments/:payment-id",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"payment-checkout",
+						"api",
+						"v1",
+						"payments",
+						":payment-id"
+					],
+					"variable": [
+						{
+							"key": "payment-id",
+							"value": "afe39cae-666a-4f5a-82bc-ca96625633e9"
+						}
+					]
+				},
+				"description": "Buscar uma transação de pagamento pelo Id\n\t.Resposta\n\t\t.Status: 200 - Registro encontrado\n\t\t.Status: 404 - Registro não encontrado"
+			},
+			"response": []
+		},
+		{
+			"name": "Payments - GET",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"amount\": 10.50,\n    \"card\": {\n    \t\"cvv\": \"123\",\n    \t\"number\": \"371449635398431\",\n    \t\"holderName\": \"Fulano\",\n    \t\"expirationDate\": {\n    \t\t\"day\": 31,\n    \t\t\"month\": 12,\n    \t\t\"year\": 2018\n    \t}\n    },\n    \"buyer\": {\n    \t\"name\": \"Fulano\",\n    \t\"cpf\": \"41231245660\",\n    \t\"email\": \"fulano@gmail.com\"\n    }\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/payment-checkout/api/v1/payments",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"payment-checkout",
+						"api",
+						"v1",
+						"payments"
+					]
+				},
+				"description": "Buscar todos as transações de pagamentos\n.Parâmetro de limite de resultados\n\t\t.limit (ex: ?limit=30)"
+			},
+			"response": []
+		},
+		{
+			"name": "Payments of Buyer ID - GET",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"amount\": 10.50,\n    \"card\": {\n    \t\"cvv\": \"123\",\n    \t\"number\": \"371449635398431\",\n    \t\"holderName\": \"Fulano\",\n    \t\"expirationDate\": {\n    \t\t\"day\": 31,\n    \t\t\"month\": 12,\n    \t\t\"year\": 2018\n    \t}\n    },\n    \"buyer\": {\n    \t\"name\": \"Fulano\",\n    \t\"cpf\": \"41231245660\",\n    \t\"email\": \"fulano@gmail.com\"\n    }\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/payment-checkout/api/v1/buyers/:id/payments",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"payment-checkout",
+						"api",
+						"v1",
+						"buyers",
+						":id",
+						"payments"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "6315c649-754e-45c1-9a4b-affeff5947c0"
+						}
+					]
+				},
+				"description": "Buscar todas as transações de pagamentos de um buyer\nBuscar uma transação de pagamento pelo Id\n\t.Resposta\n\t\t.Status: 200 - Registro encontrado\n\t\t.Status: 404 - Registro não encontrado"
+			},
+			"response": []
+		},
+		{
+			"name": "Buyers - GET",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"amount\": 10.50,\n    \"card\": {\n    \t\"cvv\": \"123\",\n    \t\"number\": \"371449635398431\",\n    \t\"holderName\": \"Fulano\",\n    \t\"expirationDate\": {\n    \t\t\"day\": 31,\n    \t\t\"month\": 12,\n    \t\t\"year\": 2018\n    \t}\n    },\n    \"buyer\": {\n    \t\"name\": \"Fulano\",\n    \t\"cpf\": \"41231245660\",\n    \t\"email\": \"fulano@gmail.com\"\n    }\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/payment-checkout/api/v1/buyers",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"payment-checkout",
+						"api",
+						"v1",
+						"buyers"
+					]
+				},
+				"description": "Buscar todos os buyers\n\t.Parâmetros de pesquisa via query param\n\t\t.cpf (ex: ?cpf=40123)\n\t\t.name (ex: ?name=fulan)\n\t\t.email (ex: ?email=fulano@gm)\n\t.Parâmetro de limite de resultados\n\t\t.limit (ex: ?limit=30)"
+			},
+			"response": []
+		},
+		{
+			"name": "Brands - GET",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"amount\": 10.50,\n    \"card\": {\n    \t\"cvv\": \"123\",\n    \t\"number\": \"371449635398431\",\n    \t\"holderName\": \"Fulano\",\n    \t\"expirationDate\": {\n    \t\t\"day\": 31,\n    \t\t\"month\": 12,\n    \t\t\"year\": 2018\n    \t}\n    },\n    \"buyer\": {\n    \t\"name\": \"Fulano\",\n    \t\"cpf\": \"41231245660\",\n    \t\"email\": \"fulano@gmail.com\"\n    }\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/payment-checkout/api/v1/cards/brands/:card-number",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"payment-checkout",
+						"api",
+						"v1",
+						"cards",
+						"brands",
+						":card-number"
+					],
+					"variable": [
+						{
+							"key": "card-number",
+							"value": "6011126484700593"
+						}
+					]
+				},
+				"description": "Buscar a bandeira pelo número do cartão\n\t.Respotas\n\t\t200 - Transação de pagamento criada\n\t\t404 - Bandeira não aceita ou número do cartão inválido\n\t.Bandeiras aceitas:\n\t\t.MASTERCARD\n\t\t.AMERICAN_EXPRESS\n\t\t.VISA\n\t\t.MAESTRO\n\t\t.DISCOVER"
+			},
+			"response": []
+		}
+	]
+}

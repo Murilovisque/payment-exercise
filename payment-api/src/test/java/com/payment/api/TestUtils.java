@@ -49,11 +49,11 @@ public class TestUtils {
 
     public static final UUID PAYMENT_ID_1 = UUID.fromString("b8ebddbe-b58e-4780-aa39-d6bdbcb5c060");
     public static final Payment.Status PAYMENT_STATUS_1 = Payment.Status.PAID;
-    public static final BigDecimal PAYMENT_AMOUNT_1 = BigDecimal.valueOf(10.00);
+    public static final BigDecimal PAYMENT_AMOUNT_1 = BigDecimal.valueOf(10.00).setScale(2);
     public static final Payment.Type PAYMENT_TYPE_1 = Payment.Type.CREDIT_CARD;
 
     public static final String BOLETO_NUMBER = "123";
-    public static final BigDecimal BOLETO_AMOUNT = BigDecimal.valueOf(5.00);
+    public static final BigDecimal BOLETO_AMOUNT = BigDecimal.valueOf(5.00).setScale(2);
 
     public static final int QUERY_LIMIT = 20;
 
@@ -72,7 +72,7 @@ public class TestUtils {
         "346489908712639", "344799617426624");
 
     public static final Collection<String> VALID_VISA_NUMBER = Arrays.asList("4485754305288472",
-        "4716150782634893", "4532541004732987488");
+        "4716150782634893", "4532541004732987488", "4024007156589631");
 
     public static final Collection<String> VALID_DISCOVER_NUMBER = Arrays.asList("6011474431072074",
         "6011387714656829", "6011264101040283739");

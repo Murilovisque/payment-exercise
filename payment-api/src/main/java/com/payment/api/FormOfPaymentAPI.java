@@ -35,27 +35,35 @@ public class FormOfPaymentAPI extends AbstractAPI {
 
     public boolean isValidCard(Card card) {
         card.normalizeExpirationDate();
-        if (card.getExpirationDate().isBefore(getValidDateLimit()))
+        if (card.getExpirationDate().isBefore(getValidDateLimit())) {
+            logger.debug("Invalid expiration date {}", card.getExpirationDate());
             return false;
-        if (card.getHolderName().trim().isEmpty())
+        }            
+        if (card.getHolderName().trim().isEmpty()) {
+            logger.debug("Invalid holder name {}", card.getHolderName());
             return false;
-        String number = card.getNumber();
-        if (!CARD_NUMBER_REGEX.matcher(number).matches())
-            return false;
-        if (validSequence(number))
-            return false;
+        }            
+        if (!validAndGetBrand(card.getNumber()).isPresent())
+            return false;        
         return true;
     }
 
     public Optional<Brand> validAndGetBrand(String cardNumber) {
-        if (CARD_NUMBER_REGEX.matcher(cardNumber).matches()) {
-            for (Brand brand : Card.Brand.values()) {
-                if (brand.getAcceptLengh().stream().anyMatch(l -> l.equals(cardNumber.length()))
-                        && brand.getIssuerIdentificationNumbers().parallelStream().anyMatch(iin -> cardNumber.startsWith(iin))) {
-                    return Optional.of(brand);
-                }
+        if (!CARD_NUMBER_REGEX.matcher(cardNumber).matches()) {
+            logger.debug("Invalid card number length {}", cardNumber);
+            return Optional.empty();
+        }
+        if (!isValidSequence(cardNumber)) {
+            logger.debug("Invalid card number sequence {}", cardNumber);
+            return Optional.empty();
+        }
+        for (Brand brand : Card.Brand.values()) {
+            if (brand.getAcceptLengh().stream().anyMatch(l -> l.equals(cardNumber.length()))
+                    && brand.getIssuerIdentificationNumbers().parallelStream().anyMatch(iin -> cardNumber.startsWith(iin))) {
+                return Optional.of(brand);
             }
         }
+        logger.debug("Brand not found, card number {}", cardNumber);
         return Optional.empty();
     }
 
@@ -91,7 +99,7 @@ public class FormOfPaymentAPI extends AbstractAPI {
         ConnectionWrapper connectionWrapper = null;
         try {
             connectionWrapper = getTransactionalConnectionWrapper();
-            UUID id = new FormOfPaymentRepository(connectionWrapper).insert(new Boleto(Integer.toString(new Random().nextInt())));
+            UUID id = new FormOfPaymentRepository(connectionWrapper).insert(new Boleto(Integer.toString(new Random().nextInt(100000))));
             commit(connectionWrapper);
             logger.info("Boleto saved");
             return id;
@@ -107,22 +115,22 @@ public class FormOfPaymentAPI extends AbstractAPI {
         return LocalDate.now().with(TemporalAdjusters.lastDayOfMonth());
     }
 
-    private boolean validSequence(String number) { //TODO: check
+    private boolean isValidSequence(String number) {
         int[] ints = new int[number.length()];
 		for (int i = 0; i < number.length(); i++)
 			ints[i] = Integer.parseInt(number.substring(i, i + 1));
-        int sumOfDoubleEvenPlace = 0;
-		for (int i = ints.length - 2; i >= 0; i -= 2) {
-			int j = ints[i];
-			j = j * 2;
-			if (j > 8) {
-				j = (j / 10) + (1 % 10);
-			}
-			sumOfDoubleEvenPlace += j;
+        for (int i = ints.length - 2; i >= 0; i = i - 2) {
+            int j = ints[i];
+            j = j * 2;
+            if (j > 9) {
+                j = j % 10 + 1;
+            }
+            ints[i] = j;
         }
-        int sumOfOddPlace = 0;
-        for (int i = ints.length - 1; i >= 0; i -= 2)  
-            sumOfOddPlace += i;
-		return (sumOfDoubleEvenPlace + sumOfOddPlace) % 10 == 0;
+        int sum = 0;
+        for (int i = 0; i < ints.length; i++) {
+            sum += ints[i];
+        }
+        return (sum % 10 == 0);
     }
 }

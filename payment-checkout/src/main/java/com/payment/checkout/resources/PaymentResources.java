@@ -2,11 +2,13 @@ package com.payment.checkout.resources;
 
 import static com.payment.checkout.HTTPUtils.HTTP_STATUS_CREATED;
 import static com.payment.checkout.HTTPUtils.HTTP_STATUS_NOT_FOUND;
-import static com.payment.checkout.HTTPUtils.HTTP_STATUS_UNAUTHORIZED;
+import static com.payment.checkout.HTTPUtils.HTTP_STATUS_BAD_REQUEST;
 import static com.payment.checkout.HTTPUtils.handleException;
 import static com.payment.checkout.HTTPUtils.parseJson;
 import static com.payment.checkout.HTTPUtils.parseUUID;
 import static com.payment.checkout.HTTPUtils.setResponse;
+import static com.payment.checkout.HTTPUtils.getLimitRetrieveData;
+
 import static spark.Spark.get;
 import static spark.Spark.path;
 import static spark.Spark.post;
@@ -16,7 +18,7 @@ import java.util.UUID;
 
 import com.google.gson.Gson;
 import com.payment.api.exceptions.PaymentException;
-import com.payment.api.exceptions.UnauthorizedPaymentException;
+import com.payment.api.exceptions.InvalidArgumentPaymentException;
 import com.payment.api.models.BoletoPayment;
 import com.payment.api.models.Buyer;
 import com.payment.api.models.Card;
@@ -42,7 +44,7 @@ public class PaymentResources {
         path("/payment-checkout/api/v1/payments", () -> {
             get("", (req, res) -> {
                 try {
-                    return gson.toJson(APIFactory.getPaymentAPI().getPayments(50));
+                    return gson.toJson(APIFactory.getPaymentAPI().getPayments(getLimitRetrieveData(req)));
                 } catch (Exception e) {
                     return handleException(e, res);
                 }
@@ -95,8 +97,8 @@ public class PaymentResources {
             UUID id = APIFactory.getPaymentAPI().processPayment(buyer, payment);
             res.status(HTTP_STATUS_CREATED);
             return id.toString();
-        } catch(UnauthorizedPaymentException e) {
-            return setResponse(res, HTTP_STATUS_UNAUTHORIZED, e.getMessage());
+        } catch(InvalidArgumentPaymentException e) {
+            return setResponse(res, HTTP_STATUS_BAD_REQUEST, e.getMessage());
         } catch (PaymentException e) {
             return handleException(e, res);
 		} 
